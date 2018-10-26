@@ -1,15 +1,33 @@
-DROP SCHEMA IF EXISTS ProjTest; 
-CREATE SCHEMA ProjTest;
-USE ProjTest;
+#IF LOCAL
+#DROP SCHEMA IF EXISTS ProjTest; 
+#CREATE SCHEMA ProjTest;
+#USE ProjTest;
 
+#IF BLUENOSE
+#USE CSID;
+
+DROP TABLE IF EXISTS Feedback;
+DROP TABLE IF EXISTS Shift;
+DROP TABLE IF EXISTS Recipe;
+DROP TABLE IF EXISTS Delivery;
+DROP TABLE IF EXISTS Instore_Order;
+DROP TABLE IF EXISTS Online_Order;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Customer;
+DROP TABLE IF EXISTS Employee;
+DROP TABLE IF EXISTS Employee_Class;
+DROP TABLE IF EXISTS Stock;
 DROP TABLE IF EXISTS Branch;
+DROP TABLE IF EXISTS Ingredient;
+DROP TABLE IF EXISTS Order_Details;
+DROP TABLE IF EXISTS Meal;
+
 CREATE TABLE Branch (
 	Brch_ID INT(5) NOT NULL UNIQUE,
 	Brch_Name VARCHAR(100) NOT NULL,
 	PRIMARY KEY(Brch_ID)
 );
 
-DROP TABLE IF EXISTS Employee_Class;
 CREATE TABLE Employee_Class (
 	EmpClass_ID INT(5) NOT NULL UNIQUE,
 	EmpClass_Rate INT(5)  NOT NULL,
@@ -17,19 +35,17 @@ CREATE TABLE Employee_Class (
 	PRIMARY KEY(EmpClass_ID)
 );
 
-DROP TABLE IF EXISTS Employee;
 CREATE TABLE Employee (
 	Emp_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Emp_FName VARCHAR(100) NOT NULL,
  	Emp_LName VARCHAR(100) NOT NULL,
-	EmpClass_ID INT(5) NOT NULL UNIQUE,
+	EmpClass_ID INT(5) NOT NULL,
     Brch_ID INT(5) NOT NULL,
    	PRIMARY KEY(Emp_ID),
 	FOREIGN KEY(EmpClass_ID) REFERENCES Employee_Class(EmpClass_ID),
     FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
 );
 
-DROP TABLE IF EXISTS Feedback;
 CREATE TABLE Feedback (
 	Fdbck_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Fdbck_Content VARCHAR(1000) NOT NULL, 
@@ -40,10 +56,6 @@ CREATE TABLE Feedback (
 	FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
 );
 
-
-
-
-DROP TABLE IF EXISTS Shift;
 CREATE TABLE Shift (
 	Shift_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Emp_ID INT(5) NOT NULL,
@@ -52,14 +64,12 @@ CREATE TABLE Shift (
 	FOREIGN KEY(Emp_ID) REFERENCES Employee(Emp_ID)
 );
 
-DROP TABLE IF EXISTS Ingredient;
 CREATE TABLE Ingredient (
 	Ingrdt_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Ingrdt_Name VARCHAR(100) NOT NULL,
 	PRIMARY KEY(Ingrdt_ID)
 );
 
-DROP TABLE IF EXISTS Meal;
 CREATE TABLE Meal (
 	Meal_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Meal_Name VARCHAR(100) NOT NULL,
@@ -67,7 +77,6 @@ CREATE TABLE Meal (
 	PRIMARY KEY(Meal_ID)
 );
 
-DROP TABLE IF EXISTS Recipe;
 CREATE TABLE Recipe (
 	Rcp_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Ingrdt_ID INT(5) NOT NULL,
@@ -78,16 +87,6 @@ CREATE TABLE Recipe (
 	FOREIGN KEY(Meal_ID) REFERENCES Meal(Meal_ID)
 );
 
-
-
-
-
-
-
-
-
-
-DROP TABLE IF EXISTS Stock;
 CREATE TABLE Stock (
 	Stck_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Ingrdt_ID INT(5) NOT NULL,
@@ -98,8 +97,6 @@ CREATE TABLE Stock (
 	FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
 );
 
-
-DROP TABLE IF EXISTS Delivery;
 CREATE TABLE Delivery (
 	Dlv_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Stck_ID INT(5) NOT NULL,
@@ -110,7 +107,6 @@ CREATE TABLE Delivery (
 	FOREIGN KEY(Stck_ID) REFERENCES Stock(Stck_ID)
 );
 
-DROP TABLE IF EXISTS Customer;
 CREATE TABLE Customer (
 	Cust_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Cust_FName VARCHAR(100)NOT NULL,
@@ -119,7 +115,6 @@ CREATE TABLE Customer (
 	PRIMARY KEY(Cust_ID)
 );
 
-DROP TABLE IF EXISTS Order_Details;
 CREATE TABLE Order_Details (
 	OrderDet_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Meal_ID INT(5) NOT NULL,
@@ -128,7 +123,6 @@ CREATE TABLE Order_Details (
 	FOREIGN KEY(Meal_ID) REFERENCES Meal(Meal_ID)
 );
 
-DROP TABLE IF EXISTS Orders;
 CREATE TABLE Orders (
 	Order_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Brch_ID INT(5) NOT NULL,
@@ -140,9 +134,6 @@ CREATE TABLE Orders (
 	FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
 );
 
-
-
-DROP TABLE IF EXISTS Online_Order;
 CREATE TABLE Online_Order (
 	OnOrder_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Cust_ID INT(5) NOT NULL,
@@ -154,7 +145,6 @@ CREATE TABLE Online_Order (
     FOREIGN KEY(Order_ID) REFERENCES Orders(Order_ID)
 );
 
-DROP TABLE IF EXISTS Instore_Order;
 CREATE TABLE Instore_Order (
 	InOrder_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Attend_ID INT(5) NOT NULL,
@@ -165,3 +155,46 @@ CREATE TABLE Instore_Order (
 	FOREIGN KEY(Cook_ID) REFERENCES Employee(Emp_ID),
     FOREIGN KEY(Attend_ID) REFERENCES Employee(Emp_ID)
 );
+
+
+#Branch data
+INSERT INTO Branch VALUES (1,"Halifax");
+INSERT INTO Branch VALUES (2,"Toronto");
+
+
+#Employee Classes
+INSERT INTO Employee_Class VALUES (1,20,"Attendant");
+INSERT INTO Employee_Class VALUES (2,20,"Head Cook");
+INSERT INTO Employee_Class VALUES (3,20,"Chef");
+INSERT INTO Employee_Class VALUES (4,20,"Manager");
+INSERT INTO Employee_Class VALUES (5,20,"Branch Manager");
+
+
+#Employee 
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","Attendant1",1,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","Attendant1",1,2);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","Attendant2",1,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","Attendant2",1,2);
+
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","HeadCook1",2,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","HeadCook1",2,2);
+
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","Chef1",3,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","Chef1",3,2);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","Chef2",3,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","Chef2",3,2);
+
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnHalifax","Manager1",4,1);
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("JohnToronto","Manager1",4,2);
+
+INSERT INTO Employee(Emp_FName,Emp_LName,EmpClass_ID,Brch_ID) VALUES ("DA BOSS","BranchManny",5,2);
+
+
+
+
+
+
+
+
+
+
