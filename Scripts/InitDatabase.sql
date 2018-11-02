@@ -5,6 +5,7 @@
 
 #IF BLUENOSE
 #USE CSID;
+
 DROP TABLE IF EXISTS Feedback;
 DROP TABLE IF EXISTS Shift;
 DROP TABLE IF EXISTS Recipe;
@@ -12,6 +13,7 @@ DROP TABLE IF EXISTS Delivery;
 DROP TABLE IF EXISTS Bill_Detail;
 DROP TABLE IF EXISTS Menu_Item;
 DROP TABLE IF EXISTS Instore_Bill;
+DROP TABLE IF EXISTS Seating;
 DROP TABLE IF EXISTS Online_Bill;
 DROP TABLE IF EXISTS Bill;
 DROP TABLE IF EXISTS Stock;
@@ -58,7 +60,7 @@ CREATE TABLE Feedback (
 CREATE TABLE Shift (
 	Shift_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Emp_ID INT(5) NOT NULL,
-	Shift_Date DATE NOT NULL,
+	Shift_Date DATETIME NOT NULL,
 	PRIMARY KEY(Shift_ID),
 	FOREIGN KEY(Emp_ID) REFERENCES Employee(Emp_ID)
 );
@@ -114,12 +116,21 @@ CREATE TABLE Customer (
 	PRIMARY KEY(Cust_ID)
 );
 
+CREATE TABLE Seating(
+	Seat_ID INT(5) NOT NULL,
+    	Brch_ID INT(5) NOT NULL,
+    	Seat_Capacity INT(5) NOT NULL,
+    	PRIMARY KEY(Seat_ID, Brch_ID),
+    	FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
+	ON DELETE CASCADE # should delete seatings when the branch is deleted
+);
 
 CREATE TABLE Bill (
 	Bill_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Brch_ID INT(5) NOT NULL,
 	Bill_Total INT(5) NOT NULL,
     	Bill_State VARCHAR(100) NOT NULL,
+    	Bill_Date DATETIME NOT NULL,
 	PRIMARY KEY(Bill_ID),
 	FOREIGN KEY(Brch_ID) REFERENCES Branch(Brch_ID)
 );
@@ -129,6 +140,7 @@ CREATE TABLE Bill_Detail (
 	Item_ID INT(5) NOT NULL,
     	Bill_ID INT(5) NOT NULL,
 	BillDet_Count INT(5) NOT NULL,
+    	BillDet_State VARCHAR(100) NOT NULL,
 	PRIMARY KEY(BillDet_ID),
 	FOREIGN KEY(Item_ID) REFERENCES Menu_Item(Item_ID),
     	FOREIGN KEY(Bill_ID) REFERENCES Bill(Bill_ID)
@@ -148,13 +160,17 @@ CREATE TABLE Online_Bill (
 CREATE TABLE Instore_Bill (
 	InBill_ID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
 	Attend_ID INT(5) NOT NULL,
+    	Seat_ID INT(5) NOT NULL,
 	Cook_ID INT(5) NOT NULL,
     	Bill_ID INT(5) NOT NULL,
+    	Brch_ID INT(5) NOT NULL,
 	PRIMARY KEY(InBill_ID),
 	FOREIGN KEY(Bill_ID) REFERENCES Bill(Bill_ID),
 	FOREIGN KEY(Cook_ID) REFERENCES Employee(Emp_ID),
-    	FOREIGN KEY(Attend_ID) REFERENCES Employee(Emp_ID)
+    	FOREIGN KEY(Attend_ID) REFERENCES Employee(Emp_ID),
+    	FOREIGN KEY(Seat_ID,Brch_ID) REFERENCES Seating(Seat_ID,Brch_ID)
 );
+
 
 
 
